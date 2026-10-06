@@ -1,8 +1,0 @@
-CHECKPOINT 05/10 — NGINX
-STATUS: PASS (configuration review)
-- Reverse proxy to app:3000.
-- Security headers configured.
-- server_tokens off.
-- Rate limit configured.
-- Public /metrics blocked at Nginx.
-RUNTIME REQUIRED: curl.exe -I http://localhost:8088 and browser access.

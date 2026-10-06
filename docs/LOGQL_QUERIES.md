@@ -1,35 +1,39 @@
-# LogQL demo queries
+# LogQL Queries
 
-Run these in **Grafana -> Explore -> Loki** after generating traffic in the website.
+Run these queries in **Grafana → Explore → Loki** after generating traffic in the application.
 
-## 1. All Blog application logs
+## Nginx logs
+
+```logql
+{container="devblog-nginx"}
+```
+
+## Application logs
 
 ```logql
 {container="devblog-app"}
 ```
 
-## 2. Application errors
+## Application errors
 
 ```logql
 {container="devblog-app"} |= "\"level\":\"ERROR\""
 ```
 
-## 3. Authentication events
+## Authentication events
 
 ```logql
 {container="devblog-app"} |~ "LOGIN|LOGIN_FAILED|LOGOUT"
 ```
 
-## 4. CMS content changes
+## Content changes
 
 ```logql
 {container="devblog-app"} |~ "CREATE_POST|UPDATE_POST|DELETE_POST|CREATE_CATEGORY"
 ```
 
-## 5. Nginx HTTP 4xx/5xx examples
+## HTTP 4xx/5xx responses
 
 ```logql
 {container="devblog-nginx"} |~ " (4|5)[0-9]{2} "
 ```
-
-The rubric asks for at least 2-3 LogQL queries; the project provides five prepared examples.

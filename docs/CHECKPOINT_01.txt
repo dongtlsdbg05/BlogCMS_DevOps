@@ -1,7 +1,0 @@
-CHECKPOINT 01/10 — RUBRIC & ARCHITECTURE
-STATUS: PASS (static design review)
-- De 7 scope mapped: posts, categories, users.
-- MySQL + phpMyAdmin selected.
-- Docker Compose architecture includes Nginx, Prometheus, Grafana, Loki, Promtail.
-- Evidence/report/testing paths planned.
-NEXT GATE: database design.

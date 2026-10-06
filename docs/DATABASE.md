@@ -1,8 +1,8 @@
-# Database Design
+# Database
 
-Database mặc định: `blogcms` (MySQL 8.4 image).
+The application uses MySQL 8.4. The default database name is `blogcms`.
 
-## Core tables
+## Tables
 
 - `users`
 - `categories`
@@ -18,11 +18,13 @@ Database mặc định: `blogcms` (MySQL 8.4 image).
 - users 1-N comments
 - categories 1-N posts
 - posts 1-N comments
-- posts N-N tags through post_tags
+- posts N-N tags through `post_tags`
 - users 1-N audit_logs
 
 ## Accounts
 
-- Application user: do official MySQL image tạo qua `MYSQL_USER` / `MYSQL_PASSWORD`; app không dùng root.
-- Exporter user: `mysql/02-create-exporter.sh` tạo riêng `exporter` và chỉ cấp `PROCESS`, `REPLICATION CLIENT`, `SELECT` phục vụ monitoring.
-- Root: chỉ dùng quản trị/khởi tạo, không dùng bởi ứng dụng.
+- The application uses the account configured by `DB_USER` and `DB_PASSWORD`.
+- MySQL Exporter uses a dedicated `exporter` account with monitoring-only permissions.
+- The root account is reserved for database initialization and administration.
+
+Database initialization files are stored in `database/`.

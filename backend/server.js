@@ -12,13 +12,13 @@ const { exposeUser } = require('./src/middleware/auth');
 const app = express();
 app.set('trust proxy', 1);
 app.set('view engine', 'ejs');
-app.set('views', path.join(__dirname, 'src', 'views'));
+app.set('views', path.join(__dirname, '..', 'frontend', 'views'));
 app.disable('x-powered-by');
 
 app.use(helmet({ contentSecurityPolicy: false }));
 app.use(express.urlencoded({ extended: false, limit: '1mb' }));
 app.use(express.json({ limit: '1mb' }));
-app.use(express.static(path.join(__dirname, 'public'), { maxAge: '1h' }));
+app.use(express.static(path.join(__dirname, '..', 'frontend', 'public'), { maxAge: '1h' }));
 app.use(session({
   name: 'devblog.sid',
   secret: process.env.SESSION_SECRET || 'development-only-change-me',

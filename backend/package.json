@@ -2,7 +2,7 @@
   "name": "devblog-cms",
   "version": "1.0.0",
   "private": true,
-  "description": "Blog/CMS for Software System Deployment and Administration course",
+  "description": "DevBlog CMS web application backend",
   "main": "server.js",
   "scripts": {
     "start": "node server.js",

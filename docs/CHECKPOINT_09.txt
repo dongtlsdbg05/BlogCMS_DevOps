@@ -1,7 +1,0 @@
-CHECKPOINT 09/10 — TERMINAL PACKAGING / DOCUMENTATION
-STATUS: PASS
-- All .bat files removed.
-- README first-run/start/stop/rebuild/log/reset workflows use PowerShell/Terminal.
-- docs/TERMINAL_COMMANDS.md present.
-- Test plan, demo script, Git plan, screenshot checklist and report outline present.
-- .env is not packaged.

@@ -1,11 +1,42 @@
 # Architecture
 
-Client -> Nginx -> Node.js/Express Blog CMS -> MySQL
+## Application flow
 
-Administration tools: phpMyAdmin (localhost only)
+```text
+Browser
+  |
+  v
+Nginx :8088
+  |
+  v
+Node.js / Express :3000
+  |
+  v
+MySQL :3306
+```
 
-Monitoring: Prometheus <- app / cAdvisor / node-exporter / MySQL exporter -> Grafana
+The source is separated into two application areas:
 
-Logging: Docker container logs -> Promtail -> Loki -> Grafana Explore
+- `backend/`: HTTP server, routing, authentication, database access, services and utilities.
+- `frontend/`: EJS templates, stylesheets and static images.
 
-Networks are separated into frontend, backend, monitoring, and logging tiers.
+Infrastructure configuration is stored under `infrastructure/`.
+
+## Observability
+
+```text
+Prometheus <- application / cAdvisor / Node Exporter / MySQL Exporter
+    |
+    v
+Grafana
+
+Docker logs -> Promtail -> Loki -> Grafana Explore
+```
+
+## Docker networks
+
+- `devblog_frontend`: Nginx and the application.
+- `devblog_backend`: application, MySQL and database-related monitoring.
+- `devblog_monitoring`: Prometheus and exporters.
+- `devblog_logging`: Loki and Promtail.
+- `devblog_management`: local management interfaces.

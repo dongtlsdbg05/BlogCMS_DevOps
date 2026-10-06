@@ -1,7 +1,0 @@
-CHECKPOINT 06/10 — PROMETHEUS + GRAFANA
-STATUS: PASS (configuration/dashboard validation)
-- Prometheus targets: app, cAdvisor, node-exporter, mysql-exporter, Prometheus.
-- MySQL exporter configuration updated to exporter credentials/flags.
-- Grafana datasources provisioned.
-- Dashboard has 8 panels for web/container/database/service health.
-RUNTIME REQUIRED: all targets UP + dashboard screenshots.

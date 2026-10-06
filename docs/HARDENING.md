@@ -1,37 +1,31 @@
 # System Hardening
 
-Rubric yêu cầu tối thiểu 3–4 biện pháp. DevBlog CMS áp dụng nhiều lớp hơn mức tối thiểu.
+The stack applies multiple defensive controls:
 
-1. **Non-root application container** — Dockerfile dùng `USER node`.
-2. **Read-only application filesystem** — app dùng `read_only: true` và tmpfs nhỏ cho `/tmp`.
-3. **Drop Linux capabilities** — app dùng `cap_drop: ALL`.
-4. **No-new-privileges** — bật cho các container phù hợp.
-5. **Network isolation** — backend, monitoring, logging là Docker internal networks.
-6. **Database least privilege** — app dùng `DB_USER`, không dùng MySQL root.
-7. **Exporter least privilege** — `exporter` chỉ được cấp `PROCESS`, `REPLICATION CLIENT`, `SELECT`.
-8. **Secrets outside Git** — `.env` bị ignore; `.env.example` chỉ có placeholder.
-9. **Password hashing** — PBKDF2-HMAC-SHA256 + random salt, 120,000 iterations.
-10. **RBAC** — `ADMIN`, `EDITOR`, `USER`.
-11. **Login rate limiting** — 5 lần/phút/client; có global request rate limit.
-12. **Nginx security headers** — CSP, X-Frame-Options, X-Content-Type-Options, Referrer-Policy, Permissions-Policy.
-13. **Nginx version suppression** — `server_tokens off`.
-14. **Disable MySQL local file loading** — `--local-infile=0`.
-15. **Admin UI local-only** — phpMyAdmin, Prometheus, Grafana bind `127.0.0.1`.
-16. **Metrics hidden from public proxy** — `/metrics` trả 404 qua Nginx; Prometheus scrape nội bộ.
-17. **Audit logging** — hành động CMS quan trọng ghi DB và stdout để Loki thu thập.
+1. The Node.js application runs as the non-root `node` user.
+2. The application container uses a read-only root filesystem.
+3. Linux capabilities are dropped with `cap_drop: ALL`.
+4. `no-new-privileges` is enabled where applicable.
+5. Backend, monitoring and logging traffic is separated into dedicated Docker networks.
+6. The application uses a dedicated MySQL account instead of root.
+7. MySQL Exporter uses a separate monitoring account.
+8. `.env` is excluded from Git.
+9. Passwords are stored as PBKDF2 hashes with random salts.
+10. CMS authorization uses `ADMIN`, `EDITOR` and `USER` roles.
+11. Login and global request rate limits are enabled.
+12. Nginx adds security headers and hides its version.
+13. MySQL local file loading is disabled.
+14. phpMyAdmin, Prometheus and Grafana bind to `127.0.0.1` only.
+15. `/metrics` is not exposed through the public Nginx endpoint.
+16. Important CMS actions are recorded in audit logs.
 
-## Terminal evidence
+Useful verification commands:
 
 ```powershell
-docker compose ps
-curl.exe -I http://localhost:8088
-docker compose exec app id
-docker inspect devblog-app --format '{{json .HostConfig.ReadonlyRootfs}}'
-docker inspect devblog-app --format '{{json .HostConfig.CapDrop}}'
+docker inspect devblog-app --format='User={{.Config.User}} ReadOnly={{.HostConfig.ReadonlyRootfs}}'
+docker inspect devblog-app --format='{{json .HostConfig.CapDrop}}'
+docker inspect devblog-app --format='{{json .HostConfig.SecurityOpt}}'
 docker network inspect devblog_backend
-git check-ignore .env
+docker port devblog-mysql
+curl.exe -I http://localhost:8088
 ```
-
-## Scope
-
-Đây là hardening phục vụ lab/course demo, không phải chứng nhận production. Nếu public Internet thực tế, cần bổ sung TLS CA-trusted, external session store, CSRF protection, backup/restore, secrets manager, firewall/host hardening và quy trình patching.
