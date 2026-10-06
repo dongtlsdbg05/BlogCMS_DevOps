@@ -1,0 +1,24 @@
+{
+  "annotations":{"list":[]},
+  "editable":true,
+  "graphTooltip":1,
+  "panels":[
+    {"type":"stat","title":"Services UP","datasource":{"type":"prometheus","uid":"prometheus"},"targets":[{"expr":"sum(up{job=~\"devblog-app|cadvisor|node-exporter|mysql-exporter\"})","refId":"A"}],"gridPos":{"h":5,"w":6,"x":0,"y":0}},
+    {"type":"stat","title":"HTTP Requests / sec","datasource":{"type":"prometheus","uid":"prometheus"},"targets":[{"expr":"sum(rate(devblog_http_requests_total[1m]))","refId":"A"}],"gridPos":{"h":5,"w":6,"x":6,"y":0}},
+    {"type":"stat","title":"HTTP p95 latency (s)","datasource":{"type":"prometheus","uid":"prometheus"},"targets":[{"expr":"histogram_quantile(0.95, sum(rate(devblog_http_request_duration_seconds_bucket[5m])) by (le))","refId":"A"}],"gridPos":{"h":5,"w":6,"x":12,"y":0}},
+    {"type":"stat","title":"MySQL connections","datasource":{"type":"prometheus","uid":"prometheus"},"targets":[{"expr":"mysql_global_status_threads_connected","refId":"A"}],"gridPos":{"h":5,"w":6,"x":18,"y":0}},
+    {"type":"timeseries","title":"Web requests by status","datasource":{"type":"prometheus","uid":"prometheus"},"targets":[{"expr":"sum by (status) (rate(devblog_http_requests_total[1m]))","legendFormat":"HTTP {{status}}","refId":"A"}],"gridPos":{"h":8,"w":12,"x":0,"y":5}},
+    {"type":"timeseries","title":"Container CPU usage","datasource":{"type":"prometheus","uid":"prometheus"},"targets":[{"expr":"sum by (name) (rate(container_cpu_usage_seconds_total{name=~\"devblog-.*\"}[1m]))","legendFormat":"{{name}}","refId":"A"}],"gridPos":{"h":8,"w":12,"x":12,"y":5}},
+    {"type":"timeseries","title":"Container memory","datasource":{"type":"prometheus","uid":"prometheus"},"targets":[{"expr":"sum by (name) (container_memory_working_set_bytes{name=~\"devblog-.*\"})","legendFormat":"{{name}}","refId":"A"}],"fieldConfig":{"defaults":{"unit":"bytes"}},"gridPos":{"h":8,"w":12,"x":0,"y":13}},
+    {"type":"timeseries","title":"MySQL queries / sec","datasource":{"type":"prometheus","uid":"prometheus"},"targets":[{"expr":"rate(mysql_global_status_queries[1m])","legendFormat":"queries/s","refId":"A"}],"gridPos":{"h":8,"w":12,"x":12,"y":13}}
+  ],
+  "refresh":"10s",
+  "schemaVersion":39,
+  "tags":["devblog","docker","mysql","web"],
+  "templating":{"list":[]},
+  "time":{"from":"now-1h","to":"now"},
+  "timezone":"browser",
+  "title":"DevBlog CMS - System Overview",
+  "uid":"devblog-overview",
+  "version":1
+}
