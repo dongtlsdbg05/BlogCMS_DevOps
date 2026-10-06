@@ -1,0 +1,16 @@
+<%- include('../partials/admin-header') %>
+<section class="split">
+  <form class="panel form-stack" method="post" action="/admin/categories">
+    <h2>Tạo chuyên mục</h2>
+    <label>Tên chuyên mục<input name="name" required maxlength="100"></label>
+    <label>Mô tả<textarea name="description" rows="4" maxlength="500"></textarea></label>
+    <button class="btn">Tạo chuyên mục</button>
+  </form>
+  <div class="panel">
+    <h2>Danh sách chuyên mục</h2>
+    <div class="table-wrap"><table><thead><tr><th>Tên / mô tả</th><th>Đường dẫn</th><th>Bài viết</th><th>Thao tác</th></tr></thead><tbody>
+      <% categories.forEach(c=> { %><tr><td><form class="form-stack compact" method="post" action="/admin/categories/<%= c.id %>"><input name="name" value="<%= c.name %>" required maxlength="100"><input name="description" value="<%= c.description || '' %>" maxlength="500" placeholder="Mô tả chuyên mục"><button class="btn small secondary">Lưu thay đổi</button></form></td><td><code><%= c.slug %></code></td><td><%= c.post_count %></td><td><% if (c.post_count===0) { %><form method="post" action="/admin/categories/<%= c.id %>/delete" onsubmit="return confirm('Bạn có chắc muốn xóa chuyên mục này?')"><button class="btn small danger">Xóa</button></form><% } else { %><small>Đang có nội dung</small><% } %></td></tr><% }) %>
+    </tbody></table></div>
+  </div>
+</section>
+<%- include('../partials/admin-footer') %>

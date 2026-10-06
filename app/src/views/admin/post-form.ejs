@@ -1,0 +1,10 @@
+<%- include('../partials/admin-header') %>
+<% const statusLabels = { DRAFT: 'Bản nháp', PUBLISHED: 'Đã xuất bản', HIDDEN: 'Đã ẩn' }; %>
+<form class="panel form-stack" method="post" action="<%= post ? '/admin/posts/'+post.id : '/admin/posts' %>">
+  <div class="form-grid"><label>Tiêu đề<input name="title" required maxlength="220" value="<%= post?.title || '' %>"></label><label>Chuyên mục<select name="category_id" required><% categories.forEach(c=> { %><option value="<%= c.id %>" <%= String(post?.category_id||'')===String(c.id)?'selected':'' %>><%= c.name %></option><% }) %></select></label></div>
+  <label>Tóm tắt<textarea name="summary" rows="3" maxlength="600"><%= post?.summary || '' %></textarea></label>
+  <label>Đường dẫn ảnh đại diện<input name="thumbnail_url" placeholder="https://..." value="<%= post?.thumbnail_url || '' %>"></label>
+  <label>Nội dung<textarea name="content" rows="14" required><%= post?.content || '' %></textarea></label>
+  <div class="form-grid"><label>Trạng thái<select name="status"><% ['DRAFT','PUBLISHED','HIDDEN'].forEach(s=> { %><option value="<%= s %>" <%= post?.status===s?'selected':'' %>><%= statusLabels[s] %></option><% }) %></select></label><div class="align-end"><button class="btn"><%= post ? 'Lưu thay đổi' : 'Tạo bài viết' %></button></div></div>
+</form>
+<%- include('../partials/admin-footer') %>

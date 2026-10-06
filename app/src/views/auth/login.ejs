@@ -1,0 +1,16 @@
+<%- include('../partials/public-header') %>
+<section class="login-wrap">
+  <div class="login-card">
+    <span class="eyebrow">KHÔNG GIAN QUẢN TRỊ</span>
+    <h1>Đăng nhập DevBlog Studio</h1>
+    <p class="muted">Truy cập khu vực quản trị nội dung dành cho thành viên được phân quyền.</p>
+    <% if (error) { %><div class="notice danger"><%= error %></div><% } %>
+    <form method="post" class="form-stack">
+      <label>Tên đăng nhập<input name="username" autocomplete="username" required></label>
+      <label>Mật khẩu<input type="password" name="password" autocomplete="current-password" required></label>
+      <button class="btn full">Đăng nhập</button>
+    </form>
+    <p class="security-note">Phiên đăng nhập được bảo vệ và giới hạn theo vai trò người dùng.</p>
+  </div>
+</section>
+<%- include('../partials/public-footer') %>

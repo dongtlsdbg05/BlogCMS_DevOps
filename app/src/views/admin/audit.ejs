@@ -1,0 +1,6 @@
+<%- include('../partials/admin-header') %>
+<section class="panel">
+  <p class="muted">Hiển thị 200 hoạt động gần nhất để hỗ trợ truy vết thay đổi và kiểm soát vận hành.</p>
+  <div class="table-wrap"><table><thead><tr><th>Thời gian</th><th>Người dùng</th><th>Hành động</th><th>Đối tượng</th><th>Địa chỉ IP</th><th>Thông tin</th></tr></thead><tbody><% logs.forEach(l=> { %><tr><td><%= new Date(l.created_at).toLocaleString('vi-VN') %></td><td><%= l.username || 'Ẩn danh' %></td><td><code><%= l.action %></code></td><td><%= l.resource %> <%= l.resource_id ? '#'+l.resource_id : '' %></td><td><%= l.ip_address || '' %></td><td><%= l.details || '' %></td></tr><% }) %></tbody></table></div>
+</section>
+<%- include('../partials/admin-footer') %>

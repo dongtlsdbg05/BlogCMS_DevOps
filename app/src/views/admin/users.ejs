@@ -1,0 +1,20 @@
+<%- include('../partials/admin-header') %>
+<% const roleLabels = { USER: 'Người dùng', EDITOR: 'Biên tập viên', ADMIN: 'Quản trị viên' }; const accountStatus = { ACTIVE: 'Đang hoạt động', LOCKED: 'Đã khóa' }; %>
+<section class="split">
+  <form class="panel form-stack" method="post" action="/admin/users">
+    <h2>Tạo tài khoản</h2>
+    <label>Tên đăng nhập<input name="username" required maxlength="50"></label>
+    <label>Email<input type="email" name="email" required maxlength="120"></label>
+    <label>Họ và tên<input name="full_name" required maxlength="120"></label>
+    <label>Mật khẩu<input type="password" name="password" minlength="8" required></label>
+    <label>Vai trò<select name="role"><% ['USER','EDITOR','ADMIN'].forEach(r=> { %><option value="<%= r %>"><%= roleLabels[r] %></option><% }) %></select></label>
+    <button class="btn">Tạo tài khoản</button>
+  </form>
+  <div class="panel">
+    <h2>Danh sách tài khoản</h2>
+    <div class="table-wrap"><table><thead><tr><th>Tài khoản</th><th>Vai trò</th><th>Trạng thái</th><th>Thao tác</th></tr></thead><tbody>
+      <% users.forEach(u=> { %><tr><td><b><%= u.username %></b><br><small><%= u.full_name %> • <%= u.email %></small></td><td><% if (u.id!==currentUser.id) { %><form class="inline role-form" method="post" action="/admin/users/<%= u.id %>/role"><select name="role"><% ['USER','EDITOR','ADMIN'].forEach(r=> { %><option value="<%= r %>" <%= u.role===r?'selected':'' %>><%= roleLabels[r] %></option><% }) %></select><button class="btn small secondary">Cập nhật quyền</button></form><% } else { %><%= roleLabels[u.role] || u.role %><% } %></td><td><span class="status <%= u.status==='ACTIVE'?'published':'hidden' %>"><%= accountStatus[u.status] || u.status %></span></td><td><% if (u.id!==currentUser.id) { %><form method="post" action="/admin/users/<%= u.id %>/toggle"><button class="btn small secondary"><%= u.status==='ACTIVE'?'Khóa tài khoản':'Mở khóa' %></button></form><% } else { %><small>Tài khoản đang đăng nhập</small><% } %></td></tr><% }) %>
+    </tbody></table></div>
+  </div>
+</section>
+<%- include('../partials/admin-footer') %>

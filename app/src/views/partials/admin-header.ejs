@@ -1,0 +1,23 @@
+<!doctype html>
+<html lang="vi">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width,initial-scale=1">
+  <title><%= title %> | DevBlog Studio</title>
+  <link rel="stylesheet" href="/css/style.css?v=20261006-2">
+</head>
+<body class="admin-body">
+<aside class="sidebar">
+  <a class="brand inverse" href="/admin">DevBlog<span>Studio</span></a>
+  <% const roleLabels = { ADMIN: 'Quản trị viên', EDITOR: 'Biên tập viên', USER: 'Người dùng' }; %>
+  <div class="user-chip"><b><%= currentUser.full_name %></b><small><%= roleLabels[currentUser.role] || currentUser.role %></small></div>
+  <nav class="side-nav">
+    <a href="/admin">Tổng quan</a>
+    <% if (['ADMIN','EDITOR'].includes(currentUser.role)) { %><a href="/admin/posts">Bài viết</a><a href="/admin/comments">Bình luận</a><% } %>
+    <% if (currentUser.role === 'ADMIN') { %><a href="/admin/categories">Chuyên mục</a><a href="/admin/users">Tài khoản</a><a href="/admin/audit">Nhật ký hoạt động</a><% } %>
+    <a href="/" target="_blank">Xem trang công khai ↗</a>
+  </nav>
+  <form method="post" action="/logout"><button class="btn btn-ghost full">Đăng xuất</button></form>
+</aside>
+<main class="admin-main">
+  <div class="admin-top"><div><small>DEVBLOG STUDIO</small><h1><%= title %></h1></div><span class="status-dot">● Hệ thống hoạt động</span></div>

@@ -1,0 +1,227 @@
+services:
+  mysql:
+    image: mysql:8.4
+    container_name: devblog-mysql
+    restart: unless-stopped
+    environment:
+      MYSQL_DATABASE: ${DB_NAME}
+      MYSQL_USER: ${DB_USER}
+      MYSQL_PASSWORD: ${DB_PASSWORD}
+      MYSQL_ROOT_PASSWORD: ${MYSQL_ROOT_PASSWORD}
+      MYSQL_EXPORTER_PASSWORD: ${MYSQL_EXPORTER_PASSWORD}
+    command: ["--local-infile=0", "--skip-name-resolve"]
+    volumes:
+      - mysql_data:/var/lib/mysql
+      - ./mysql/init.sql:/docker-entrypoint-initdb.d/01-init.sql:ro
+      - ./mysql/02-create-exporter.sh:/docker-entrypoint-initdb.d/02-create-exporter.sh:ro
+    networks: [backend, monitoring]
+    healthcheck:
+      test: ["CMD-SHELL", "mysqladmin ping -h 127.0.0.1 -uroot -p$$MYSQL_ROOT_PASSWORD --silent"]
+      interval: 10s
+      timeout: 5s
+      retries: 10
+      start_period: 30s
+    security_opt: ["no-new-privileges:true"]
+
+  app:
+    build: ./app
+    container_name: devblog-app
+    restart: unless-stopped
+    environment:
+      APP_NAME: ${APP_NAME}
+      NODE_ENV: ${NODE_ENV}
+      PORT: 3000
+      DB_HOST: mysql
+      DB_PORT: 3306
+      DB_NAME: ${DB_NAME}
+      DB_USER: ${DB_USER}
+      DB_PASSWORD: ${DB_PASSWORD}
+      SESSION_SECRET: ${SESSION_SECRET}
+      COOKIE_SECURE: "false"
+    depends_on:
+      mysql:
+        condition: service_healthy
+    expose: ["3000"]
+    networks: [frontend, backend, monitoring]
+    read_only: true
+    tmpfs:
+      - /tmp:size=64m,noexec,nosuid
+    cap_drop: ["ALL"]
+    security_opt: ["no-new-privileges:true"]
+    healthcheck:
+      test: ["CMD-SHELL", "wget -qO- http://127.0.0.1:3000/api/health >/dev/null || exit 1"]
+      interval: 20s
+      timeout: 5s
+      retries: 5
+      start_period: 30s
+
+  nginx:
+    image: nginx:1.27-alpine
+    container_name: devblog-nginx
+    restart: unless-stopped
+    depends_on:
+      app:
+        condition: service_healthy
+    ports:
+      - "8088:8080"
+    volumes:
+      - ./nginx/nginx.conf:/etc/nginx/nginx.conf:ro
+    networks: [frontend]
+    read_only: true
+    tmpfs:
+      - /var/cache/nginx:size=64m,noexec,nosuid
+      - /var/run:size=8m,noexec,nosuid
+      - /tmp:size=16m,noexec,nosuid
+    entrypoint: ["nginx", "-g", "daemon off;"]
+    security_opt: ["no-new-privileges:true"]
+    healthcheck:
+      test: ["CMD-SHELL", "wget -qO- http://127.0.0.1:8080/nginx-health >/dev/null || exit 1"]
+      interval: 20s
+      timeout: 5s
+      retries: 5
+
+  phpmyadmin:
+    image: phpmyadmin:5.2.2
+    container_name: devblog-phpmyadmin
+    restart: unless-stopped
+    environment:
+      PMA_HOST: mysql
+      PMA_PORT: 3306
+      UPLOAD_LIMIT: 16M
+    depends_on:
+      mysql:
+        condition: service_healthy
+    ports:
+      - "127.0.0.1:8082:80"
+    networks: [backend, management]
+    security_opt: ["no-new-privileges:true"]
+
+  prometheus:
+    image: prom/prometheus:v3.2.1
+    container_name: devblog-prometheus
+    restart: unless-stopped
+    command:
+      - --config.file=/etc/prometheus/prometheus.yml
+      - --storage.tsdb.path=/prometheus
+      - --storage.tsdb.retention.time=7d
+      - --web.enable-lifecycle
+    volumes:
+      - ./prometheus/prometheus.yml:/etc/prometheus/prometheus.yml:ro
+      - prometheus_data:/prometheus
+    ports:
+      - "127.0.0.1:9090:9090"
+    networks: [monitoring, frontend, backend]
+    security_opt: ["no-new-privileges:true"]
+
+  grafana:
+    image: grafana/grafana:11.6.0
+    container_name: devblog-grafana
+    restart: unless-stopped
+    environment:
+      GF_SECURITY_ADMIN_USER: ${GRAFANA_ADMIN_USER}
+      GF_SECURITY_ADMIN_PASSWORD: ${GRAFANA_ADMIN_PASSWORD}
+      GF_USERS_ALLOW_SIGN_UP: "false"
+      GF_AUTH_ANONYMOUS_ENABLED: "false"
+      GF_SECURITY_COOKIE_SECURE: "false"
+    volumes:
+      - grafana_data:/var/lib/grafana
+      - ./grafana/provisioning:/etc/grafana/provisioning:ro
+      - ./grafana/dashboards:/var/lib/grafana/dashboards:ro
+    ports:
+      - "127.0.0.1:3001:3000"
+    networks: [monitoring, logging, management]
+    depends_on: [prometheus, loki]
+    security_opt: ["no-new-privileges:true"]
+
+  cadvisor:
+    image: gcr.io/cadvisor/cadvisor:v0.49.2
+    container_name: devblog-cadvisor
+    restart: unless-stopped
+    volumes:
+      - /:/rootfs:ro
+      - /var/run:/var/run:ro
+      - /sys:/sys:ro
+      - /var/lib/docker/:/var/lib/docker:ro
+    expose: ["8080"]
+    networks: [monitoring]
+    security_opt: ["no-new-privileges:true"]
+
+  node-exporter:
+    image: prom/node-exporter:v1.8.2
+    container_name: devblog-node-exporter
+    restart: unless-stopped
+    command:
+      - --path.rootfs=/host
+    volumes:
+      - /:/host:ro
+    expose: ["9100"]
+    networks: [monitoring]
+    security_opt: ["no-new-privileges:true"]
+
+  mysql-exporter:
+    image: prom/mysqld-exporter:v0.20.0
+    container_name: devblog-mysql-exporter
+    restart: unless-stopped
+    environment:
+      MYSQLD_EXPORTER_PASSWORD: ${MYSQL_EXPORTER_PASSWORD}
+    command:
+      - --mysqld.address=mysql:3306
+      - --mysqld.username=exporter
+    depends_on:
+      mysql:
+        condition: service_healthy
+    expose: ["9104"]
+    networks: [monitoring, backend]
+    security_opt: ["no-new-privileges:true"]
+
+  loki:
+    image: grafana/loki:3.4.2
+    container_name: devblog-loki
+    restart: unless-stopped
+    command: -config.file=/etc/loki/local-config.yaml
+    volumes:
+      - ./loki/loki-config.yml:/etc/loki/local-config.yaml:ro
+      - loki_data:/loki
+    expose: ["3100"]
+    networks: [logging]
+    security_opt: ["no-new-privileges:true"]
+
+  promtail:
+    image: grafana/promtail:3.4.2
+    container_name: devblog-promtail
+    restart: unless-stopped
+    command: -config.file=/etc/promtail/config.yml
+    volumes:
+      - ./promtail/promtail-config.yml:/etc/promtail/config.yml:ro
+      - /var/lib/docker/containers:/var/lib/docker/containers:ro
+      - /var/run/docker.sock:/var/run/docker.sock:ro
+      - promtail_positions:/tmp
+    networks: [logging]
+    depends_on: [loki]
+    security_opt: ["no-new-privileges:true"]
+
+networks:
+  frontend:
+    name: devblog_frontend
+
+  backend:
+    name: devblog_backend
+    internal: true
+
+  monitoring:
+    name: devblog_monitoring
+    internal: true
+
+  logging:
+    name: devblog_logging
+    internal: true
+
+  management:
+    name: devblog_management
+
+volumes:
+  mysql_data:
+  prometheus_data:
+  grafana_data:
+  loki_data:
+  promtail_positions:

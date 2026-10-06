@@ -1,0 +1,33 @@
+<%- include('../partials/public-header') %>
+<section class="hero">
+  <div class="container hero-grid">
+    <div>
+      <span class="eyebrow">CÔNG NGHỆ • KIẾN TRÚC • VẬN HÀNH</span>
+      <h1>Góc nhìn kỹ thuật dành cho những sản phẩm số vận hành bền vững.</h1>
+      <p>Phân tích thực tiễn về kiến trúc web, nền tảng dữ liệu, bảo mật, khả năng quan sát và kỹ thuật backend.</p>
+      <form class="search" method="get">
+        <input name="q" value="<%= q %>" placeholder="Tìm theo tiêu đề hoặc nội dung...">
+        <button class="btn">Tìm kiếm</button>
+      </form>
+    </div>
+    <div class="hero-card">
+      <span class="eyebrow">CHỦ ĐỀ NỔI BẬT</span>
+      <h2>Kiến thức thực tiễn cho đội ngũ công nghệ</h2>
+      <div class="stack-cloud">
+        <span>Kiến trúc web</span><span>Container</span><span>Quan sát hệ thống</span>
+        <span>Bảo mật</span><span>Dữ liệu</span><span>Kỹ thuật backend</span>
+      </div>
+    </div>
+  </div>
+</section>
+<section class="container section">
+  <div class="section-head"><div><span class="eyebrow">BÀI VIẾT</span><h2><%= q ? 'Kết quả tìm kiếm' : 'Bài viết mới nhất' %></h2></div><span><%= posts.length %> bài viết</span></div>
+  <div class="card-grid"><% posts.forEach(post => { %><article class="post-card"><% const cover = post.thumbnail_url || '/images/docker.svg'; %><img src="<%= cover %><%= cover.startsWith('/') ? '?v=20261006-2' : '' %>" alt="Ảnh minh họa cho <%= post.title %>"><div class="post-body"><a class="badge" href="/category/<%= post.category_slug %>"><%= post.category_name %></a><h3><a href="/post/<%= post.slug %>"><%= post.title %></a></h3><p><%= post.summary || '' %></p><div class="meta"><span><%= post.author_name %></span><span><%= post.views %> lượt xem</span></div></div></article><% }) %></div>
+  <% if (!posts.length) { %><div class="empty">Chưa có bài viết phù hợp với từ khóa này.</div><% } %>
+  <div class="pagination"><% for(let i=1;i<=totalPages;i++){ %><a class="<%= i===page?'active':'' %>" href="/?page=<%= i %>&q=<%= encodeURIComponent(q) %>"><%= i %></a><% } %></div>
+</section>
+<section id="categories" class="container section">
+  <div class="section-head"><div><span class="eyebrow">KHÁM PHÁ</span><h2>Chuyên mục</h2></div></div>
+  <div class="category-grid"><% categories.forEach(c => { %><a class="category-card" href="/category/<%= c.slug %>"><b><%= c.name %></b><span><%= c.post_count %> bài viết</span><p><%= c.description || '' %></p></a><% }) %></div>
+</section>
+<%- include('../partials/public-footer') %>

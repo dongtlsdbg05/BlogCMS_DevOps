@@ -1,0 +1,24 @@
+{
+  "name": "devblog-cms",
+  "version": "1.0.0",
+  "private": true,
+  "description": "Blog/CMS for Software System Deployment and Administration course",
+  "main": "server.js",
+  "scripts": {
+    "start": "node server.js",
+    "dev": "node --watch server.js",
+    "check": "node --check server.js && node --check src/routes/public.js && node --check src/routes/auth.js && node --check src/routes/admin.js",
+    "test": "node --test",
+    "validate": "npm run check && npm test"
+  },
+  "dependencies": {
+    "dotenv": "^16.4.7",
+    "ejs": "^3.1.10",
+    "express": "^5.1.0",
+    "express-rate-limit": "^7.5.0",
+    "express-session": "^1.18.1",
+    "helmet": "^8.1.0",
+    "mysql2": "^3.14.0",
+    "prom-client": "^15.1.3"
+  }
+}

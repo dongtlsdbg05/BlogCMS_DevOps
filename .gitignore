@@ -1,0 +1,10 @@
+.env
+node_modules/
+npm-debug.log*
+*.log
+.DS_Store
+Thumbs.db
+app/public/uploads/*
+mysql/data/
+grafana/data/
+coverage/

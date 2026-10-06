@@ -1,0 +1,26 @@
+<!doctype html>
+<html lang="vi">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width,initial-scale=1">
+  <meta name="description" content="DevBlog - Góc nhìn chuyên sâu về công nghệ, hạ tầng và vận hành số.">
+  <title><%= title %> | DevBlog</title>
+  <link rel="stylesheet" href="/css/style.css?v=20261006-2">
+</head>
+<body>
+<header class="site-header">
+  <div class="container nav">
+    <a class="brand" href="/">Dev<span>Blog</span></a>
+    <nav>
+      <a href="/">Trang chủ</a>
+      <a href="/#categories">Chuyên mục</a>
+      <% if (currentUser) { %>
+        <a href="/admin">Quản trị</a>
+        <form class="inline" method="post" action="/logout"><button class="link-btn">Đăng xuất</button></form>
+      <% } else { %>
+        <a href="/login">Đăng nhập</a>
+      <% } %>
+    </nav>
+  </div>
+</header>
+<main>
