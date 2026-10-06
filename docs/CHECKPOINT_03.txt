@@ -1,0 +1,9 @@
+CHECKPOINT 03/10 — BLOG/CMS APPLICATION
+STATUS: PASS (source/syntax/unit validation)
+- Public blog, search, category, pagination, detail, comments.
+- CMS: posts, categories, users, comments, audit.
+- RBAC ADMIN/EDITOR/USER.
+- Category update and user role update included.
+- /api/health and /metrics present.
+- node --check PASS; utility tests PASS.
+RUNTIME REQUIRED: complete UI CRUD test.

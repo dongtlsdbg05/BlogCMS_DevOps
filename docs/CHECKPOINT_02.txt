@@ -1,0 +1,7 @@
+CHECKPOINT 02/10 — DATABASE
+STATUS: PASS (static validation)
+- 7 tables: users, categories, posts, comments, tags, post_tags, audit_logs.
+- PK/FK/indexes/seed data present.
+- Application DB user is separate from root.
+- MySQL exporter has a separate least-privilege account init script.
+RUNTIME REQUIRED: verify all tables in phpMyAdmin after first Docker run.

@@ -1,0 +1,8 @@
+CHECKPOINT 07/10 — LOKI + PROMTAIL
+STATUS: PASS (configuration review)
+- Loki single-binary local filesystem configuration present.
+- Promtail Docker service discovery present.
+- Container/service/image labels configured.
+- 5 LogQL queries documented (rubric requires >= 2-3).
+NOTE: Promtail retained because the assignment explicitly requires it.
+RUNTIME REQUIRED: Grafana Explore returns real logs.

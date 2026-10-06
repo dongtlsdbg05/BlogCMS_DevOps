@@ -1,0 +1,14 @@
+CHECKPOINT 08/10 — HARDENING
+STATUS: PASS (static controls exceed rubric minimum)
+Detected controls include:
+- non-root app
+- read-only filesystem
+- cap_drop ALL
+- no-new-privileges
+- internal networks
+- app DB least privilege
+- exporter least privilege
+- .env ignored
+- password hashing
+- RBAC/rate limits/security headers/audit logs
+RUNTIME REQUIRED: terminal evidence commands in docs/HARDENING.md.

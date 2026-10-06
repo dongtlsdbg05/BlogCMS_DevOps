@@ -1,0 +1,8 @@
+CHECKPOINT 04/10 — DOCKER COMPOSE
+STATUS: PASS (YAML/static packaging)
+- 11 services declared.
+- Persistent volumes defined.
+- Healthchecks on MySQL/app/Nginx.
+- frontend/backend/monitoring/logging networks defined.
+- backend/monitoring/logging marked internal.
+RUNTIME REQUIRED: docker compose config + docker compose up -d --build on target machine.
